@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Value Calculator — delafuente.ai</title>
+<meta name="description" content="Estimate the economic value of implementing AI in knowledge-work workflows — with transparent assumptions, costs, and payback.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root{
+  --bg:#f3efe7;
+  --paper:#fbf9f4;
+  --ink:#171817;
+  --muted:#666b66;
+  --blue:#2457ff;
+  --blue2:#1737a6;
+  --lime:#c8f064;
+  --line:#d7d3ca;
+  --dark:#121419;
+  --soft:#e9e4d9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}
+.wrap{max-width:1120px;margin:auto;padding:0 24px}
+.hero{min-height:650px;background:var(--dark);color:white;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;width:560px;height:560px;border-radius:50%;right:-180px;top:-210px;background:radial-gradient(circle at 35% 35%,#3f68ff,#1c33a8 55%,transparent 70%);opacity:.95}
+.hero:after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;right:120px;bottom:-190px;background:var(--lime);opacity:.82;filter:blur(2px)}
+.nav{display:flex;justify-content:space-between;align-items:center;padding-top:30px;font-size:12px;letter-spacing:.15em;font-weight:700;text-transform:uppercase;position:relative;z-index:2}
+.brand{font-family:'Space Grotesk',sans-serif;font-size:17px;text-transform:none;letter-spacing:-.02em}
+.pill{border:1px solid #ffffff55;border-radius:999px;padding:8px 12px}
+.hero-inner{padding-top:98px;max-width:860px;position:relative;z-index:2}
+.eyebrow,.kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:700}
+.eyebrow{color:#aebfff}
+.kicker{color:var(--blue)}
+h1,h2,.display{font-family:'Space Grotesk',sans-serif}
+.hero h1{font-size:clamp(54px,8.5vw,96px);line-height:.92;letter-spacing:-.055em;margin:16px 0 22px}
+.hero p{font-size:21px;line-height:1.52;color:#d4d6df;max-width:760px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.btn{padding:15px 20px;border-radius:12px;font-weight:700;text-decoration:none}
+.btn.light{background:white;color:var(--dark)}
+.btn.ghost{color:white;border:1px solid #ffffff55}
+section{padding:72px 0;border-bottom:1px solid rgba(0,0,0,.07)}
+h2{font-size:clamp(36px,5vw,56px);line-height:1;letter-spacing:-.04em;margin:10px 0 14px}
+.lede{font-size:18px;line-height:1.65;max-width:820px;color:#555b56}
+.calc{display:grid;grid-template-columns:1.12fr .88fr;gap:28px;margin-top:34px}
+.card{background:rgba(251,249,244,.94);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 10px 34px rgba(0,0,0,.05)}
+label{display:block;font-weight:700;margin:17px 0 8px}
+.input,select{width:100%;padding:14px 15px;border:1px solid #c9c5bb;background:white;border-radius:11px;font:inherit;color:var(--ink)}
+.hint{font-size:12px;line-height:1.48;color:var(--muted);margin-top:6px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.scenario{border:1px solid transparent;background:#e8e4da;padding:11px 8px;border-radius:11px;font-weight:700;cursor:pointer;color:var(--dark)}
+.scenario.active{background:var(--dark);color:white}
+.custom{display:flex;gap:10px;align-items:center;margin-top:11px}
+.custom .input{max-width:120px}
+.result{background:var(--blue);color:white;position:relative;overflow:hidden}
+.result:after{content:"";position:absolute;width:270px;height:270px;border-radius:50%;background:#ffffff12;right:-100px;bottom:-115px;border:34px solid #ffffff10}
+.result-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#d7e0ff;font-weight:700}
+.main{font-family:'Space Grotesk';font-size:clamp(50px,7vw,78px);line-height:.96;letter-spacing:-.05em;margin:12px 0}
+.sub{font-size:18px;color:#e2e8ff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.mini{background:#eef2ff;color:#152052;border-radius:14px;padding:16px}
+.mini b{display:block;font-size:24px}
+.mini span{font-size:12px}
+.note{font-size:12px;color:#d7e0ff;line-height:1.5;margin-top:18px;position:relative;z-index:2}
+.badge{display:inline-block;background:#dfe6ff;color:#1838a7;font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:28px}
+.metric{padding:22px;border-radius:18px;background:#e4e0d6}
+.metric.blue{background:#dbe2ff}
+.metric.dark{background:var(--dark);color:white}
+.metric b{font-family:'Space Grotesk';font-size:36px;display:block}
+.metric span{font-size:13px;line-height:1.45}
+.method{background:#ebe7dd}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:28px}
+.step{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px}
+.num{font-family:'Space Grotesk';font-size:34px;color:var(--blue)}
+.evidence{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+.e-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px}
+.e-card b{display:block;font-size:18px;margin-bottom:7px}
+.e-card a{color:var(--blue);font-weight:700;text-decoration:none}
+.warning{margin-top:18px;border-left:4px solid var(--lime);padding:14px 16px;background:#f7f8ef;border-radius:6px 12px 12px 6px;line-height:1.5}
+.footer{background:var(--dark);color:white;padding:46px 0}
+.footer .display{font-size:42px}
+.footer p{max-width:760px;color:#c9ccd5;line-height:1.6}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+
+.assess-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:34px}
+.question{padding:18px 0;border-bottom:1px solid var(--line)}
+.question:first-child{padding-top:0}
+.question-title{font-weight:700;margin-bottom:10px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.scale button{border:1px solid var(--line);background:white;border-radius:10px;padding:10px 5px;font:inherit;font-size:12px;cursor:pointer}
+.scale button.selected{background:var(--dark);color:white;border-color:var(--dark)}
+.scale-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:5px}
+.fit-card{background:var(--dark);color:white}
+.fit-score{font-family:'Space Grotesk';font-size:74px;line-height:1;letter-spacing:-.06em;margin:12px 0}
+.fit-band{font-family:'Space Grotesk';font-size:28px;margin-bottom:12px}
+.fit-card p{color:#cfd2dc;line-height:1.55}
+.signal{padding:12px 14px;border-radius:12px;background:#ffffff0d;margin-top:10px;font-size:13px;line-height:1.45}
+.signal strong{color:var(--lime)}
+.route{margin-top:18px;padding:18px;border-radius:16px;background:var(--lime);color:var(--dark)}
+.route-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+.route-title{font-family:'Space Grotesk';font-size:25px;line-height:1.05;margin:6px 0}
+.route-copy{font-size:13px;line-height:1.45}
+.gate{margin-top:22px;padding:16px;border:1px solid #ffffff2c;border-radius:14px}
+.gate a{color:var(--dark);background:var(--lime);display:inline-block;margin-top:8px;padding:11px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+.hidden{display:none}
+
+@media(max-width:780px){
+  .calc,.metrics,.steps,.evidence,.assess-grid{grid-template-columns:1fr}
+  .duo{grid-template-columns:1fr}
+  .trio{grid-template-columns:1fr}
+  .hero{min-height:700px}
+  .hero-inner{padding-top:74px}
+  .pill{display:none}
+}
+</style>
+
+<style id="site-brand-override">
+:root{
+  --dark:#0b0b09;
+  --panel:#121210;
+  --panel2:#171714;
+  --ivory:#e8e4d8;
+  --paper:#f2efe6;
+  --muted:#817f73;
+  --gold:#746124;
+  --gold2:#9a8438;
+  --line:#3b3217;
+  --lime:#9a8438;
+  --blue:#9a8438;
+}
+html{background:var(--dark)}
+body{
+  background:var(--dark)!important;
+  color:var(--ivory)!important;
+  font-family:"Courier New",ui-monospace,SFMono-Regular,Menlo,monospace!important;
+  letter-spacing:.015em;
+}
+body:before{
+  content:"delafuente.ai";
+  display:block;
+  max-width:1120px;
+  margin:0 auto;
+  padding:34px 28px 28px;
+  color:var(--gold2);
+  font-size:18px;
+  letter-spacing:.28em;
+  border-bottom:1px solid var(--line);
+}
+h1,h2,h3,.route-title,.fit-band,.result-value{
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-weight:400!important;
+  letter-spacing:-.02em;
+}
+h1{color:var(--ivory)!important}
+h2,h3{color:var(--ivory)!important}
+p,.lede,.sub,.small,.hint,.scale-labels{color:var(--muted)!important}
+section,.section{background:var(--dark)!important}
+.hero{
+  background:var(--dark)!important;
+  border-bottom:1px solid var(--line)!important;
+}
+.kicker,.eyebrow,.route-label,.fit-label,.result-label{
+  color:var(--gold2)!important;
+  font-family:"Courier New",monospace!important;
+  letter-spacing:.16em!important;
+}
+.card,.question,.assessment-card,.calculator-card,.result-card,.evidence-card{
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+.question{border-width:0 0 1px 0!important}
+button,.btn,.cta,a.button{
+  border-radius:0!important;
+  font-family:"Courier New",monospace!important;
+  font-weight:600!important;
+  letter-spacing:.04em;
+}
+button:not(.scale-btn),.btn,.cta,a.button{
+  background:var(--gold)!important;
+  color:#0b0b09!important;
+  border:1px solid var(--gold2)!important;
+}
+.scale-btn{
+  background:transparent!important;
+  color:var(--muted)!important;
+  border:1px solid #464338!important;
+  border-radius:0!important;
+}
+.scale-btn.active,.scale-btn:hover{
+  background:var(--gold)!important;
+  color:var(--ivory)!important;
+  border-color:var(--gold2)!important;
+}
+input,select{
+  background:#0f0f0d!important;
+  color:var(--ivory)!important;
+  border:1px solid #464338!important;
+  border-radius:0!important;
+  font-family:"Courier New",monospace!important;
+}
+input[type="range"]{accent-color:var(--gold2)}
+.route{
+  background:transparent!important;
+  color:var(--ivory)!important;
+  border:1px solid var(--gold)!important;
+  border-radius:0!important;
+}
+.route-copy{color:var(--muted)!important}
+.gate,.signal{
+  background:var(--panel2)!important;
+  border-color:var(--line)!important;
+  border-radius:0!important;
+}
+.signal strong{color:var(--gold2)!important}
+a{color:var(--gold2)}
+hr{border-color:var(--line)}
+footer{
+  background:var(--dark)!important;
+  color:var(--muted)!important;
+  border-top:1px solid var(--line)!important;
+}
+@media(max-width:700px){
+  body:before{padding:26px 22px 22px;font-size:15px}
+  h1{font-size:clamp(42px,12vw,66px)!important;line-height:.98!important}
+  h2{font-size:34px!important;line-height:1.05!important}
+  .hero,.wrap,.container{padding-left:22px!important;padding-right:22px!important}
+  .card,.assessment-card,.calculator-card{padding:22px!important}
+}
+</style>
+
+
+<style id="readability-fix">
+/* Higher-contrast card typography while preserving the site's muted aesthetic */
+.card,.question,.assessment-card,.calculator-card,.result-card,.evidence-card{
+  color:#e9e5d9!important;
+}
+.card p,.question p,.assessment-card p,.calculator-card p,
+.result-card p,.evidence-card p,
+.question-title,.field label,label,.signal,.gate,.route-copy{
+  color:#d1cec3!important;
+}
+.question-title,.field label,label{
+  font-weight:600!important;
+}
+.scale-labels,.hint,.small{
+  color:#aaa79b!important;
+}
+input,select{
+  color:#f0ede4!important;
+  border-color:#625b45!important;
+}
+input::placeholder{color:#969286!important}
+.scale-btn{
+  color:#c3c0b5!important;
+  border-color:#625b45!important;
+}
+.scale-btn.active,.scale-btn:hover{
+  background:#806c2b!important;
+  color:#fffdf5!important;
+}
+.signal{
+  color:#c9c6ba!important;
+}
+.signal strong,.gate strong{
+  color:#c4a94c!important;
+}
+.route-copy{
+  color:#d1cec3!important;
+}
+.result-value,.fit-band{
+  color:#f2eee3!important;
+}
+/* Keep secondary text muted, but not so muted that it fails on the dark panels */
+.card .muted,.assessment-card .muted,.calculator-card .muted{
+  color:#aaa79b!important;
+}
+</style>
+
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="nav">
+      <div class="brand">delafuente.ai</div>
+      <div class="pill">AI value calculator</div>
+    </div>
+    <div class="hero-inner">
+      <div class="eyebrow">AI where it actually makes sense</div>
+      <h1>What is your<br>AI opportunity worth?</h1>
+      <p>First test whether a workflow is a sensible candidate for AI. Then estimate the business value — including time saved, implementation cost, ROI and payback.</p>
+      <div class="cta">
+        <a class="btn light" href="#assessment">Assess a workflow</a>
+        <a class="btn ghost" href="#evidence">See the evidence</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<section id="assessment">
+  <div class="wrap">
+    <div class="kicker">Before calculating ROI</div>
+    <h2>Should AI touch this workflow at all?</h2>
+    <p class="lede">Score the workflow first — and do not assume the answer is an LLM. Stable rules and system-to-system steps may be better handled with deterministic automation; AI earns its place when the workflow genuinely needs interpretation, extraction, generation or fuzzy reasoning.</p>
+
+    <div class="assess-grid">
+      <div class="card" id="questions">
+        <div class="question" data-key="volume" data-positive="1">
+          <div class="question-title">How much volume does this workflow handle?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Very low</span><span>Very high</span></div>
+        </div>
+        <div class="question" data-key="repeat" data-positive="1">
+          <div class="question-title">How repetitive and pattern-based is the work?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Unique every time</span><span>Highly repetitive</span></div>
+        </div>
+        <div class="question" data-key="digital" data-positive="1">
+          <div class="question-title">How structured and digitally accessible are the inputs?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Messy / inaccessible</span><span>Clean / accessible</span></div>
+        </div>
+        <div class="question" data-key="measure" data-positive="1">
+          <div class="question-title">Can you measure quality, time or outcomes reliably?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Hard to measure</span><span>Clearly measurable</span></div>
+        </div>
+        <div class="question" data-key="rules" data-positive="0">
+          <div class="question-title">Can the workflow be expressed as clear rules, conditions and API calls?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Not really</span><span>Almost entirely</span></div>
+        </div>
+        <div class="question" data-key="language" data-positive="1">
+          <div class="question-title">Does the workflow require interpreting messy language, documents or meaning?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Hardly ever</span><span>Constantly</span></div>
+        </div>
+        <div class="question" data-key="judgment" data-positive="0">
+          <div class="question-title">How much expert judgment or negotiation is required?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Very little</span><span>Constantly</span></div>
+        </div>
+        <div class="question" data-key="risk" data-positive="0">
+          <div class="question-title">How serious is an incorrect AI output?</div>
+          <div class="scale"></div><div class="scale-labels"><span>Easy to catch / fix</span><span>High consequence</span></div>
+        </div>
+      </div>
+
+      <div class="card fit-card">
+        <div class="result-label">AI workflow fit</div>
+        <div class="fit-score"><span id="fitScore">50</span><small style="font-size:22px">/100</small></div>
+        <div class="fit-band" id="fitBand">Worth investigating</div>
+        <p id="fitText">This workflow may contain useful AI opportunities, but the implementation should target specific steps rather than automate the workflow end-to-end.</p>
+        <div id="signals"></div>
+        <div class="route">
+          <div class="route-label">Recommended intervention</div>
+          <div class="route-title" id="routeTitle">Hybrid workflow</div>
+          <div class="route-copy" id="routeCopy">Use deterministic automation for orchestration and AI only where interpretation is genuinely needed.</div>
+        </div>
+        <div class="gate">
+          <strong id="gateTitle">Next: quantify the opportunity</strong>
+          <div class="small" style="color:#cfd2dc;margin-top:5px" id="gateText">Use the calculator below to test whether the potential benefit justifies implementation.</div>
+          <a href="#calculator">Calculate the business case ↓</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="calculator">
+  <div class="wrap">
+    <div class="kicker">Start with the workflow, not the model</div>
+    <h2>Put a number on the bottleneck.</h2>
+    <p class="lede">The calculator estimates the value of capacity unlocked by AI. It does not assume that every hour saved becomes cash: the result is most useful when the released capacity can be redeployed to higher-value work, faster delivery, more customers or avoided hiring.</p>
+
+    <div class="calc">
+      <div class="card">
+        <span class="badge">1 · Current workflow</span>
+
+        <label>Workflow type</label>
+        <select id="workflow">
+          <option value="support">Customer support / service operations</option>
+          <option value="research">Research, analysis and reporting</option>
+          <option value="docs">Document processing / extraction / review</option>
+          <option value="marketing">Marketing and content operations</option>
+          <option value="data">Data / BI / analytics workflows</option>
+          <option value="software">Software and technical workflows</option>
+          <option value="localization">Localization / multilingual content</option>
+          <option value="admin">Back-office / administrative work</option>
+          <option value="other">Other knowledge-work workflow</option>
+        </select>
+        <div class="hint" id="workflowHint"></div>
+
+        <div class="duo">
+          <div>
+            <label>People involved</label>
+            <input class="input" id="people" type="number" min="1" value="12">
+          </div>
+          <div>
+            <label>Loaded hourly cost (€)</label>
+            <input class="input" id="hourly" type="number" min="1" step="1" value="35">
+          </div>
+        </div>
+
+        <div class="duo">
+          <div>
+            <label>Hours / person / week on this workflow</label>
+            <input class="input" id="hours" type="number" min="0" max="60" step=".5" value="8">
+          </div>
+          <div>
+            <label>Adoption rate</label>
+            <input class="input" id="adoption" type="number" min="0" max="100" step="5" value="80">
+          </div>
+        </div>
+
+        <label>Share of the workflow suitable for AI assistance</label>
+        <input class="input" id="assistable" type="number" min="0" max="100" step="5" value="60">
+        <div class="hint">Keep this below 100%. Many workflows contain judgment, negotiation, accountability, exceptions or sensitive decisions that should remain human-led.</div>
+
+        <label>Time reduction on the AI-suitable portion</label>
+        <div class="trio">
+          <button class="scenario" data-pct="10">Conservative<br>10%</button>
+          <button class="scenario active" data-pct="20">Base case<br>20%</button>
+          <button class="scenario" data-pct="30">Strong fit<br>30%</button>
+        </div>
+        <div class="custom">
+          <span>Or test</span>
+          <input class="input" id="gain" type="number" min="0" max="100" step="1" value="20">
+          <span>%</span>
+        </div>
+
+        <span class="badge" style="margin-top:28px">2 · Investment</span>
+        <div class="duo">
+          <div>
+            <label>Implementation cost (€)</label>
+            <input class="input" id="implementation" type="number" min="0" step="500" value="7500">
+          </div>
+          <div>
+            <label>AI / software cost per user / month (€)</label>
+            <input class="input" id="software" type="number" min="0" step="1" value="30">
+          </div>
+        </div>
+      </div>
+
+      <div class="card result">
+        <div class="result-label">Estimated year-one net value</div>
+        <div class="main" id="netValue">—</div>
+        <div class="sub">after implementation and software costs</div>
+
+        <div class="grid">
+          <div class="mini"><b id="grossValue">—</b><span>gross capacity value / year</span></div>
+          <div class="mini"><b id="savedHours">—</b><span>hours released / year</span></div>
+          <div class="mini"><b id="roi">—</b><span>year-one ROI</span></div>
+          <div class="mini"><b id="payback">—</b><span>estimated payback</span></div>
+        </div>
+
+        <div class="note" id="resultNote"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="evidence">
+  <div class="wrap">
+    <div class="kicker">Evidence, not magic</div>
+    <h2>AI can create value. It can also destroy it.</h2>
+    <p class="lede">Productivity gains depend heavily on the task, the worker, the implementation and the quality of the human-AI workflow. That is why this calculator lets you change every assumption rather than hard-coding one universal “AI uplift”.</p>
+
+    <div class="metrics">
+      <div class="metric blue">
+        <b>+14%</b>
+        <span>average productivity improvement in a study of 5,179 customer-support agents using a generative-AI assistant.</span>
+      </div>
+      <div class="metric">
+        <b>&gt;25%</b>
+        <span>faster completion in an experiment with 758 BCG consultants on tasks that were inside the model’s capability frontier.</span>
+      </div>
+      <div class="metric dark">
+        <b>−23%</b>
+        <span>performance on a task outside that frontier in the same BCG research — a reminder that “use AI everywhere” is not a strategy.</span>
+      </div>
+    </div>
+
+    <div class="warning"><strong>The point is not to automate the maximum amount of work.</strong> It is to identify a workflow where AI improves speed, quality or capacity without weakening judgment, control, privacy or reliability.</div>
+
+    <div class="evidence">
+      <div class="e-card">
+        <b>Customer support: measurable productivity gains</b>
+        <span>NBER researchers found a 14% average increase in issues resolved per hour, with much larger gains for less experienced workers.</span><br><br>
+        <a href="https://www.nber.org/papers/w31161" target="_blank">NBER — Generative AI at Work ↗</a>
+      </div>
+      <div class="e-card">
+        <b>Knowledge work: faster and better — when the task fits</b>
+        <span>HBS/BCG research found consultants completed suitable tasks more than 25% faster and achieved over 40% higher human-rated performance.</span><br><br>
+        <a href="https://aiinstitute.hbs.edu/future-proof-with-ai/genai-productivity/" target="_blank">Harvard Business School AI Institute ↗</a>
+      </div>
+      <div class="e-card">
+        <b>The jagged frontier matters</b>
+        <span>BCG reported that the same technology that improved performance on some tasks reduced it by 23% on a business problem-solving task outside the model’s capabilities.</span><br><br>
+        <a href="https://www.bcg.com/publications/2023/how-people-create-and-destroy-value-with-gen-ai" target="_blank">BCG — How People Create and Destroy Value with GenAI ↗</a>
+      </div>
+      <div class="e-card">
+        <b>Workflow redesign, not just prompting</b>
+        <span>BCG has reported AI-first workflow redesigns reducing time spent on key workflows by roughly 25–40% in company case work, while keeping humans in the loop.</span><br><br>
+        <a href="https://www.bcg.com/publications/2026/how-leaders-build-an-ai-first-cost-advantage" target="_blank">BCG — AI-first cost advantage ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="method">
+  <div class="wrap">
+    <div class="kicker">How the estimate works</div>
+    <h2>Transparent assumptions. No “AI saves 40%” hand-waving.</h2>
+    <p class="lede"><strong>LLM is not a synonym for automation.</strong> If a process is deterministic, use deterministic technology. A sensible architecture might be n8n or code for orchestration, ordinary APIs and rules for predictable steps, and an LLM only for the parts that require semantic interpretation. The goal is business value, not maximum AI usage.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Size the workflow</h3>
+        <p>We calculate the annual labour value currently tied up in the target workflow.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Apply only the addressable gain</h3>
+        <p>The benefit is limited by the share of work suitable for AI, expected time reduction and realistic adoption.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Subtract the real cost</h3>
+        <p>Implementation and recurring software costs are deducted to show year-one net value and payback.</p>
+      </div>
+    </div>
+    <p class="small" style="margin-top:24px"><strong>Formula:</strong> annual released hours = people × hours/week × 52 × AI-suitable share × time reduction × adoption. Gross capacity value = released hours × loaded hourly cost. Year-one net value = gross capacity value − implementation cost − annual software cost. ROI = net value ÷ year-one investment. This is a scenario model, not a financial forecast.</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="display">delafuente.ai</div>
+    <p>I help knowledge-work companies identify where AI is worth implementing, redesign the workflow around it, and measure whether it actually creates value — without turning every problem into an LLM problem. This calculator is a screening tool; a real business case starts with the workflow, baseline and constraints.</p>
+  </div>
+</footer>
+
+<script>
+
+const assessment = {volume:3,repeat:3,digital:3,measure:3,rules:3,language:3,judgment:3,risk:3};
+document.querySelectorAll('.question').forEach(q=>{
+  const scale=q.querySelector('.scale'), key=q.dataset.key;
+  for(let i=1;i<=5;i++){
+    const b=document.createElement('button');
+    b.type='button'; b.textContent=i;
+    if(i===3)b.classList.add('selected');
+    b.onclick=()=>{
+      assessment[key]=i;
+      scale.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));
+      scoreAssessment();
+    };
+    scale.appendChild(b);
+  }
+});
+function scoreAssessment(){
+  const scale=x=>(x-1)/4;
+  const aiNeed=.22*scale(assessment.language)+.18*(1-scale(assessment.rules))+.15*scale(assessment.volume)+.15*scale(assessment.repeat)+.15*scale(assessment.digital)+.15*scale(assessment.measure);
+  const riskPenalty=.18*scale(assessment.risk)+.12*scale(assessment.judgment);
+  let score=Math.round(Math.max(0,Math.min(1,aiNeed-riskPenalty))*100);
+  let band,text;
+  if(score>=70){band='Strong candidate for an AI-assisted pilot';text='The workflow contains enough interpretation or unstructured information to justify testing AI — with a bounded scope and measurable quality controls.';}
+  else if(score>=48){band='Worth investigating — probably hybrid';text='AI may add value to selected steps, but do not put an LLM in the whole pipeline. Separate deterministic orchestration from the parts that require interpretation.';}
+  else if(score>=28){band='Automation may matter more than AI';text='This workflow may be a better fit for conventional automation first. Use AI only for narrow steps where rules genuinely break down.';}
+  else {band='Keep it deterministic';text='The workflow gives little reason to introduce an LLM. A script, integration, rules engine or workflow automation may be cheaper, faster, more predictable and easier to govern.';}
+  const deterministic=.42*scale(assessment.rules)+.22*scale(assessment.repeat)+.18*scale(assessment.digital)+.18*scale(assessment.volume);
+  const semantic=.48*scale(assessment.language)+.20*(1-scale(assessment.rules))+.16*scale(assessment.repeat)+.16*scale(assessment.volume);
+  const readiness=.55*scale(assessment.digital)+.45*scale(assessment.measure);
+  let routeTitle,routeCopy;
+  if(readiness<.28){routeTitle='Process / data first';routeCopy='Do not automate a broken or unmeasurable workflow. Improve the inputs, process and baseline before choosing an AI or automation stack.';}
+  else if(deterministic>=.62&&semantic<.48){routeTitle='Deterministic automation';routeCopy='Prefer rules, scripts, APIs or a workflow tool such as n8n. You get lower cost, predictable behaviour and easier testing. Add an LLM only if a specific step needs semantic interpretation.';}
+  else if(deterministic>=.52&&semantic>=.45){routeTitle='Hybrid workflow';routeCopy='Use deterministic automation for orchestration, validation and business rules; call an LLM only for fuzzy steps such as extraction, classification, summarisation or generation.';}
+  else if(semantic>=.58){routeTitle='AI-assisted workflow';routeCopy='An LLM or specialised model may earn its place because the work depends on language or interpretation. Keep deterministic checks and human review around consequential outputs.';}
+  else {routeTitle='Simplify before adding technology';routeCopy='There is no strong signal for either AI or heavy automation yet. A smaller process change may create more value than adding another technology layer.';}
+  document.getElementById('fitScore').textContent=score;document.getElementById('fitBand').textContent=band;document.getElementById('fitText').textContent=text;document.getElementById('routeTitle').textContent=routeTitle;document.getElementById('routeCopy').textContent=routeCopy;
+  const sig=[];
+  if(assessment.rules>=4)sig.push('<div class="signal"><strong>Deterministic signal:</strong> clear rules favour scripts, APIs or workflow automation over an LLM.</div>');
+  if(assessment.language>=4)sig.push('<div class="signal"><strong>AI signal:</strong> interpreting language or messy documents is where semantic models can add value.</div>');
+  if(assessment.repeat>=4)sig.push('<div class="signal"><strong>Automation signal:</strong> repetitive work gives you something stable to test and measure.</div>');
+  if(assessment.volume>=4)sig.push('<div class="signal"><strong>Scale signal:</strong> high volume means small per-task gains can compound.</div>');
+  if(assessment.measure<=2)sig.push('<div class="signal"><strong>Watch:</strong> weak measurement makes it difficult to prove that any intervention improved the workflow.</div>');
+  if(assessment.judgment>=4)sig.push('<div class="signal"><strong>Watch:</strong> expert judgment is central, so technology should probably assist rather than decide.</div>');
+  if(assessment.risk>=4)sig.push('<div class="signal"><strong>Watch:</strong> errors are consequential; validation and human review need to be designed in.</div>');
+  if(assessment.digital<=2)sig.push('<div class="signal"><strong>Watch:</strong> poor inputs may need fixing before adding an automation layer.</div>');
+  if(!sig.length)sig.push('<div class="signal"><strong>Mixed profile:</strong> test a small, measurable step before making a larger investment.</div>');
+  document.getElementById('signals').innerHTML=sig.join('');
+  document.getElementById('gateTitle').textContent='Next: quantify the intervention';
+  document.getElementById('gateText').textContent=routeTitle==='Deterministic automation'?'The ROI calculator can still size the value of the workflow improvement. Treat implementation cost as automation/integration cost rather than AI cost.':'Use conservative assumptions below and compare expected value with implementation and recurring costs.';
+}
+scoreAssessment();
+
+const presets = {
+  support:{assist:70,gain:14,hint:'Evidence is relatively strong for AI-assisted support, but gains vary sharply by worker experience and process design.'},
+  research:{assist:60,gain:20,hint:'Good candidates include first-pass research, synthesis, drafting and structured analysis — with expert review for consequential decisions.'},
+  docs:{assist:75,gain:25,hint:'Document-heavy workflows are often strong candidates when extraction, classification, summarisation or validation can be measured.'},
+  marketing:{assist:70,gain:25,hint:'Ideation and content production can benefit substantially, but brand judgment, differentiation and factual review still need human ownership.'},
+  data:{assist:50,gain:15,hint:'AI can accelerate exploration, SQL, documentation and analysis, but validation matters: models can confidently produce plausible errors.'},
+  software:{assist:55,gain:20,hint:'Coding assistants can speed up implementation, but architecture, testing, security and review remain essential.'},
+  localization:{assist:70,gain:20,hint:'AI can help with drafting, QA, terminology, extraction and routing. The right model depends heavily on content risk and locale.'},
+  admin:{assist:65,gain:20,hint:'Repetitive text-heavy coordination, triage, classification and drafting are often good candidates for assisted automation.'},
+  other:{assist:50,gain:15,hint:'Start conservatively. Measure the current workflow before deciding whether AI is the right intervention.'}
+};
+const eur=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+const n=id=>Math.max(0,parseFloat(document.getElementById(id).value)||0);
+
+function update(){
+  const people=n('people'), hourly=n('hourly'), hours=n('hours'), adoption=n('adoption')/100,
+        assist=n('assistable')/100, gain=n('gain')/100, impl=n('implementation'), sw=n('software');
+  const annualHours=people*hours*52;
+  const released=annualHours*assist*gain*adoption;
+  const gross=released*hourly;
+  const annualSoftware=people*sw*12;
+  const investment=impl+annualSoftware;
+  const net=gross-investment;
+  const roi=investment>0?(net/investment)*100:null;
+  const monthlyNetBenefit=(gross-annualSoftware)/12;
+  const payback=monthlyNetBenefit>0?impl/monthlyNetBenefit:null;
+
+  document.getElementById('netValue').textContent=(net>=0?'+':'')+eur(net);
+  document.getElementById('grossValue').textContent=eur(gross);
+  document.getElementById('savedHours').textContent=Math.round(released).toLocaleString('en-GB');
+  document.getElementById('roi').textContent=roi===null?'—':Math.round(roi)+'%';
+  document.getElementById('payback').textContent=payback===null?'No payback':(payback<1?'< 1 month':payback.toFixed(1)+' months');
+  document.getElementById('resultNote').textContent=
+    'Scenario model: '+Math.round(assist*100)+'% of the workflow is assumed AI-suitable, with a '+Math.round(gain*100)+'% time reduction and '+Math.round(adoption*100)+'% adoption. Capacity value is not automatically cash savings; it only becomes economic value if the time is productively redeployed or genuinely avoids cost.';
+}
+function applyPreset(){
+  const p=presets[document.getElementById('workflow').value];
+  document.getElementById('assistable').value=p.assist;
+  document.getElementById('gain').value=p.gain;
+  document.getElementById('workflowHint').textContent=p.hint;
+  document.querySelectorAll('.scenario').forEach(x=>x.classList.toggle('active',x.dataset.pct===String(p.gain)));
+  update();
+}
+document.querySelectorAll('.scenario').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.scenario').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById('gain').value=b.dataset.pct;
+  update();
+});
+['people','hourly','hours','adoption','assistable','gain','implementation','software'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{
+    if(id==='gain') document.querySelectorAll('.scenario').forEach(x=>x.classList.toggle('active',x.dataset.pct===document.getElementById('gain').value));
+    update();
+  });
+});
+document.getElementById('workflow').addEventListener('change',applyPreset);
+applyPreset();
+</script>
+</body>
+</html>
